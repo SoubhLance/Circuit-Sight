@@ -71,6 +71,7 @@ wandb/
 # --- Logs & Runtime Temp Files ---
 *.log
 *.tmp
+backend/tmp/
 scratch/
 
 # --- Environment Secrets & Credentials ---

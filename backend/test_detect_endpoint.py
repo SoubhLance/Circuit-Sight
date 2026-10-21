@@ -89,8 +89,8 @@ def run_tests():
                 if isinstance(operation, dict) and "tags" in operation:
                     used_tags.update(operation["tags"])
         print(f"OpenAPI Documentation Tags: {sorted(list(used_tags))}")
-        assert used_tags == {"Detection", "Defects", "Health"}, f"Unexpected tags in docs: {used_tags}"
-        print("PASS: Swagger documentation lists exclusively Detection, Defects, Health.")
+        assert used_tags == {"Detection", "Defects", "Health", "Batch"}, f"Unexpected tags in docs: {used_tags}"
+        print("PASS: Swagger documentation lists exclusively Detection, Defects, Health, Batch.")
 
         # Load sample image bytes
         test_img_path = backend_dir / "dataset" / "PCB_DATASET" / "images" / "Missing_hole" / "01_missing_hole_01.jpg"

@@ -7,6 +7,7 @@ Detector-First Architecture:
 - Secondary: Fine-tuned EfficientNet-B0 for optional crop classification.
 """
 
+import asyncio
 import sys
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -22,7 +23,9 @@ if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
 from api.deps import model_manager, detector_manager
+from api.batch_manager import batch_manager
 from api.routes_detect import router as detect_router
+from api.routes_batch import router as batch_router
 from api.routes_defects import router as defects_router
 from api.routes_health import router as health_router
 
@@ -32,7 +35,7 @@ async def lifespan(app: FastAPI):
     """
     Lifespan context manager for warm-up and graceful resource cleanup.
     Pre-loads the YOLOv8 detector and EfficientNet-B0 crop classifier.
-    Classifier failure is non-fatal: the detector continues to operate.
+    Starts background cleanup task for expired batch jobs.
     """
     print("[CircuitSight] Initializing PCB Defect Classifier (EfficientNet-B0)...")
     try:
@@ -52,7 +55,25 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         print(f"[CircuitSight Warning] Could not pre-load detector model: {exc}")
 
+    # Startup batch cleanup: delete batch folders older than 60 minutes
+    try:
+        cleaned_up = batch_manager.cleanup_expired_batches()
+        if cleaned_up > 0:
+            print(f"[CircuitSight] Initial cleanup purged {cleaned_up} expired batch folders.")
+    except Exception as exc:
+        print(f"[CircuitSight Warning] Initial batch cleanup error: {exc}")
+
+    # Launch periodic batch cleanup task (every 5 minutes)
+    cleanup_task = asyncio.create_task(batch_manager.periodic_cleanup_loop(interval_seconds=300))
+
     yield
+
+    # Graceful shutdown: cancel periodic cleanup task
+    cleanup_task.cancel()
+    try:
+        await cleanup_task
+    except asyncio.CancelledError:
+        pass
 
     print("[CircuitSight] Shutting down PCB Defect Service...")
 
@@ -67,8 +88,9 @@ A detector-first RESTful API for real-time localization and classification of Pr
 
 ### Key Capabilities:
 * **YOLOv8 Full-Board Detection**: Real-time multi-defect localization (`missing_hole`, `mouse_bite`, `open_circuit`, `short`, `spur`, `spurious_copper`) with bounding boxes and mAP@0.5 > 96%.
+* **Batch Inspection Pipeline**: High-throughput multi-image batch detection (`/api/batch`) with background processing, chunked GPU inference, thumbnail generation, and zipped inspection reports.
 * **Two-Stage Pipeline**: YOLO detection on whole PCB photos with optional secondary fine-grained crop classification using EfficientNet-B0.
-* **Annotated Visual Verification**: Export detection results with bounding boxes rendered as base64 PNGs.
+* **Annotated Visual Verification**: Export detection results with bounding boxes rendered as base64 PNGs or quality 90 JPEGs.
 * **Industrial Defect Taxonomy**: Built-in severity classifications, functional risk analyses, and manufacturing remediation standards.
     """,
     version="2.0.0",
@@ -86,10 +108,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount only Detection, Defects, and Health Routers
+# Mount Detection, Batch, Defects, and Health Routers
 app.include_router(detect_router, prefix="/api")
+app.include_router(batch_router, prefix="/api")
 app.include_router(defects_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
+
+from fastapi.openapi.utils import get_openapi
+
+
+def custom_openapi():
+    """Custom OpenAPI schema generator ensuring format: binary for multipart array uploads."""
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+    # Ensure items in Body_submit_batch_api_batch_post has type: string and format: binary
+    body_schema = (
+        openapi_schema.get("components", {})
+        .get("schemas", {})
+        .get("Body_submit_batch_api_batch_post", {})
+    )
+    files_prop = body_schema.get("properties", {}).get("files", {})
+    if "items" in files_prop:
+        files_prop["items"] = {"type": "string", "format": "binary"}
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
+
 
 
 @app.get("/", include_in_schema=False)

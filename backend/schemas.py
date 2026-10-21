@@ -62,6 +62,58 @@ class ClassifierHealthInfo(BaseModel):
     device: Optional[str] = Field(None, description="Compute device used for classification")
 
 
+class BatchImageResult(BaseModel):
+    index: int = Field(..., description="0-based index of the image in the uploaded batch")
+    filename: str = Field(..., description="Sanitized unique filename")
+    width: int = Field(0, description="Original image width in pixels")
+    height: int = Field(0, description="Original image height in pixels")
+    total_defects: int = Field(0, description="Total defect count detected on this board")
+    defect_summary: Dict[str, int] = Field(default_factory=dict, description="Defect counts grouped by class")
+    detections: List[DetectionItem] = Field(default_factory=list, description="List of detected defect objects")
+    thumb_url: Optional[str] = Field(None, description="URL path to thumbnail JPEG")
+    image_url: Optional[str] = Field(None, description="URL path to full annotated JPEG")
+    warning: Optional[str] = Field(None, description="Operational warning (e.g. no defects detected above confidence threshold)")
+    error: Optional[str] = Field(None, description="Error message if inference/processing failed on this image")
+
+
+class BatchStatusResponse(BaseModel):
+    status: str = Field(..., description="Batch execution status ('processing', 'done', or 'failed')")
+    processed: int = Field(..., description="Number of images processed so far")
+    total: int = Field(..., description="Total images in batch")
+    errors: List[Any] = Field(default_factory=list, description="List of errors encountered during batch processing")
+
+
+class BatchInitResponse(BaseModel):
+    batch_id: str = Field(..., description="Unique UUID identifying the batch job")
+    total: int = Field(..., description="Total number of images accepted for processing")
+    status: str = Field("processing", description="Initial status of the batch job")
+
+
+class BatchResultsResponse(BaseModel):
+    batch_id: str = Field(..., description="Unique UUID identifying the batch job")
+    status: str = Field(..., description="Batch execution status ('processing', 'done', or 'failed')")
+    processed: int = Field(..., description="Number of images processed so far")
+    total: int = Field(..., description="Total number of images in batch")
+    images_with_detections: int = Field(0, description="Number of boards with >= 1 defect")
+    images_without_detections: int = Field(0, description="Number of boards with no defects detected above confidence threshold")
+    total_defects: int = Field(0, description="Total number of defects detected across all batch boards")
+    per_class_counts: Dict[str, int] = Field(default_factory=dict, description="Aggregate defect counts grouped by class")
+    images: List[BatchImageResult] = Field(default_factory=list, description="Per-image detection results")
+    settings_used: Optional[Dict[str, Any]] = Field(None, description="Inference settings applied to this batch")
+    errors: List[Any] = Field(default_factory=list, description="List of errors encountered across the batch")
+
+
+class BatchDeleteResponse(BaseModel):
+    batch_id: str = Field(..., description="UUID of the batch")
+    deleted: bool = Field(True, description="Whether the batch files and directory were removed")
+
+
+class BatchHealthInfo(BaseModel):
+    active_batches: int = Field(0, description="Number of batches currently processing")
+    max_concurrent_batches: int = Field(2, description="Maximum allowed concurrent batches")
+    storage_dir: str = Field(..., description="Batch temporary filesystem directory path")
+
+
 class HealthResponse(BaseModel):
     status: str
     device: str
@@ -77,3 +129,5 @@ class HealthResponse(BaseModel):
     detector_classes: Optional[List[str]] = None
     classifier: Optional[ClassifierHealthInfo] = None
     classifier_loaded: Optional[bool] = None
+    batch: Optional[BatchHealthInfo] = None
+

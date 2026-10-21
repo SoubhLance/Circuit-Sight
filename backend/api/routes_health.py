@@ -15,7 +15,8 @@ from api.deps import (
     APP_START_TIME,
     CLASSES,
 )
-from schemas import HealthResponse, DetectorHealthInfo, ClassifierHealthInfo
+from api.batch_manager import get_batch_manager, BatchManager
+from schemas import HealthResponse, DetectorHealthInfo, ClassifierHealthInfo, BatchHealthInfo
 
 router = APIRouter(prefix="", tags=["Health"])
 
@@ -24,11 +25,12 @@ router = APIRouter(prefix="", tags=["Health"])
     "/health",
     response_model=HealthResponse,
     summary="System Health & Hardware Status",
-    description="Check API liveness, CUDA GPU acceleration availability, detector status, and classifier status.",
+    description="Check API liveness, CUDA GPU acceleration availability, detector status, classifier status, and batch processing status.",
 )
 async def health_check(
     model_mgr: ModelManager = Depends(get_model_manager),
     detector_mgr: DetectorManager = Depends(get_detector_manager),
+    batch_mgr: BatchManager = Depends(get_batch_manager),
 ):
     cuda_avail = torch.cuda.is_available()
     gpu_name = torch.cuda.get_device_name(0) if cuda_avail else None
@@ -52,6 +54,12 @@ async def health_check(
         device=clf_device,
     )
 
+    batch_info = BatchHealthInfo(
+        active_batches=batch_mgr.active_batch_count,
+        max_concurrent_batches=2,
+        storage_dir=str(batch_mgr.batches_root),
+    )
+
     primary_model = detector_mgr.model_name if detector_mgr.is_loaded else "unloaded"
     checkpoint = str(detector_mgr.model_path.name) if detector_mgr.is_loaded else "none"
 
@@ -70,6 +78,7 @@ async def health_check(
         detector_classes=detector_mgr.classes,
         classifier=classifier_info,
         classifier_loaded=model_mgr.is_loaded,
+        batch=batch_info,
     )
 
 
