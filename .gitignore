@@ -1,0 +1,93 @@
+# ==========================================
+# CircuitSight - Comprehensive Git Ignore
+# ==========================================
+
+# --- Python & Bytecode ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- Virtual Environments ---
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# --- Node / Frontend (React + Vite) ---
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+.vite/
+*.tsbuildinfo
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --- Datasets & High-Volume Image Data ---
+backend/dataset/
+dataset/
+data/yolo_dataset/
+data/dataset_v2/
+data/raw/
+data/processed/
+*.zip
+*.tar.gz
+*.tar
+*.rar
+
+# --- Large Trained Model Checkpoints (>50MB) ---
+# Checkpoint weights are typically stored in cloud/LFS, keep JSON metadata
+*.pth
+*.pt
+*.h5
+*.ckpt
+*.onnx
+*.engine
+!backend/models/*.json
+
+# --- Training Results, Runs & Cache ---
+backend/runs/
+runs/
+backend/results/*/curves/
+backend/results/*/*.png
+wandb/
+.pytest_cache/
+
+# --- Logs & Runtime Temp Files ---
+*.log
+*.tmp
+scratch/
+
+# --- Environment Secrets & Credentials ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+aws_credentials
+.aws/
+
+# --- Operating System & Editor Artifacts ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

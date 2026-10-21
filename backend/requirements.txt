@@ -1,0 +1,44 @@
+# CircuitSight — Training Environment Requirements
+# Versions removed so pip can resolve compatible versions for Python 3.12
+# and your installed cu130 torch build.
+#
+# STEP 1 — install torch/torchvision FIRST, matching your GPU driver:
+#   pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+#
+# STEP 2 — then install everything else:
+#   pip install -r requirements.txt
+
+# --- Notebook / Jupyter ---
+notebook
+ipykernel
+jupyterlab
+
+# --- Data handling ---
+numpy
+pandas
+pillow
+
+# --- Training utilities / metrics ---
+scikit-learn
+matplotlib
+seaborn
+
+# --- Backend (FastAPI serving) ---
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+
+# --- AWS / storage ---
+boto3
+
+# --- Image processing ---
+opencv-python-headless
+
+# --- Reports ---
+reportlab
+fpdf2
+
+# --- Progress / utils ---
+tqdm
+python-dotenv

@@ -1,0 +1,30 @@
+{
+  "split_id": "8cfea52c",
+  "model": "yolov8s",
+  "task": "detection",
+  "classes": [
+    "missing_hole",
+    "mouse_bite",
+    "open_circuit",
+    "short",
+    "spur",
+    "spurious_copper"
+  ],
+  "img_size": 1024,
+  "map50": 0.9677,
+  "map50_95": 0.4974,
+  "precision": 0.8583,
+  "recall": 0.8973,
+  "per_class_ap50": {
+    "missing_hole": 0.9875,
+    "mouse_bite": 0.9825,
+    "open_circuit": 0.9946,
+    "short": 0.8921,
+    "spur": 0.9679,
+    "spurious_copper": 0.9817
+  },
+  "inference_ms": 49.66,
+  "model_size_mb": 21.51,
+  "epochs_trained": 63,
+  "training_time_min": 47.77
+}

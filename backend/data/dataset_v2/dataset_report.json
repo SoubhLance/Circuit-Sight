@@ -1,0 +1,65 @@
+{
+  "split_id": "8cfea52c",
+  "crop_mode": "scaled",
+  "n_crops": 2953,
+  "boards": {
+    "train": [
+      "01",
+      "04",
+      "05",
+      "06",
+      "09",
+      "10",
+      "11"
+    ],
+    "val": [
+      "07"
+    ],
+    "test": [
+      "08",
+      "12"
+    ]
+  },
+  "class_counts": {
+    "train": {
+      "missing_hole": 346,
+      "mouse_bite": 342,
+      "open_circuit": 332,
+      "short": 342,
+      "spur": 337,
+      "spurious_copper": 353
+    },
+    "val": {
+      "missing_hole": 50,
+      "mouse_bite": 50,
+      "open_circuit": 50,
+      "short": 50,
+      "spur": 50,
+      "spurious_copper": 50
+    },
+    "test": {
+      "missing_hole": 101,
+      "mouse_bite": 100,
+      "open_circuit": 100,
+      "short": 99,
+      "spur": 101,
+      "spurious_copper": 100
+    }
+  },
+  "near_duplicates_vs_train": {
+    "val": {
+      "n": 300,
+      "exact_match_in_train": 0,
+      "within_8_bits": 0,
+      "median_min_distance_bits": 72.5
+    },
+    "test": {
+      "n": 601,
+      "exact_match_in_train": 0,
+      "within_8_bits": 0,
+      "median_min_distance_bits": 65.0
+    }
+  },
+  "bbox_only_test_accuracy": 0.4143,
+  "chance": 0.1667
+}

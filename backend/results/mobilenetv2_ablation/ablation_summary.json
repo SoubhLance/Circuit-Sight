@@ -1,0 +1,29 @@
+{
+  "pretrained_test_accuracy": 1.0,
+  "scratch_test_accuracy": 0.9955,
+  "scratch_best_val_acc": 1.0,
+  "scratch_epochs": 40,
+  "scratch_training_min": 10.9,
+  "worst_case_accuracy": {
+    "Gaussian blur (radius, px)": {
+      "pretrained_min": 0.554,
+      "scratch_min": 0.941
+    },
+    "Brightness (factor)": {
+      "pretrained_min": 0.946,
+      "scratch_min": 0.292
+    },
+    "Gaussian noise (sigma)": {
+      "pretrained_min": 0.183,
+      "scratch_min": 0.166
+    },
+    "JPEG quality": {
+      "pretrained_min": 0.336,
+      "scratch_min": 0.952
+    },
+    "Low resolution (scale)": {
+      "pretrained_min": 0.682,
+      "scratch_min": 0.977
+    }
+  }
+}

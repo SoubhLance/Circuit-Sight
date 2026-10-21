@@ -1,0 +1,13 @@
+{
+  "split_id": "8cfea52c",
+  "backbone": "EfficientNet-B0",
+  "test_accuracy": 0.97,
+  "precision_weighted": 0.9706,
+  "recall_weighted": 0.97,
+  "f1_weighted": 0.9701,
+  "avg_inference_ms": 0.52,
+  "model_size_mb": 15.61,
+  "best_val_acc": 0.9933,
+  "epochs_trained": 10,
+  "training_time_min": 3.01
+}
