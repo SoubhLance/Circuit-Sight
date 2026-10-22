@@ -1,0 +1,28 @@
+name: CircuitSight CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose
+        run: docker compose config -q
+
+      - name: Check backend Python syntax
+        run: |
+          python -m compileall -q backend main.py
+
+      - name: Check frontend build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build

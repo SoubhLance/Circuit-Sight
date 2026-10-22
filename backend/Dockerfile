@@ -26,6 +26,8 @@ WORKDIR /app
 # curl, ca-certificates: Required for container health checks
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
+    libxcb1 libgl1 \
+    libgl1 \
     libgomp1 \
     curl \
     ca-certificates \

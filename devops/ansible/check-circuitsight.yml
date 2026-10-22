@@ -1,0 +1,26 @@
+---
+- name: Verify CircuitSight deployment
+  hosts: circuitsight
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Check Docker service
+      ansible.builtin.command: systemctl is-active docker
+      changed_when: false
+
+    - name: Check CircuitSight containers
+      ansible.builtin.command: docker compose ps
+      args:
+        chdir: /home/ubuntu/Circuit-Sight
+      changed_when: false
+
+    - name: Check frontend HTTP response
+      ansible.builtin.uri:
+        url: http://127.0.0.1/
+        status_code: 200
+
+    - name: Check backend health endpoint
+      ansible.builtin.uri:
+        url: http://127.0.0.1/api/health
+        status_code: 200
