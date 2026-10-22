@@ -356,6 +356,7 @@ CircuitSight/
         └── index.css               # Tailwind CSS & custom animations
 ```
 
+
 ---
 
 ## ⚖️ License & Ethics Note
