@@ -1,44 +1,19 @@
-# CircuitSight — Training Environment Requirements
-# Versions removed so pip can resolve compatible versions for Python 3.12
-# and your installed cu130 torch build.
+# CircuitSight — Production Runtime Dependencies (Linux Docker / AWS)
 #
-# STEP 1 — install torch/torchvision FIRST, matching your GPU driver:
-#   pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+# NOTE: For Linux Docker deployment, PyTorch CPU wheels are installed as a
+# prerequisite layer to prevent downloading multi-gigabyte CUDA packages:
+#   pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 #
-# STEP 2 — then install everything else:
-#   pip install -r requirements.txt
+# For local Windows development, continue using the existing venv/ (CUDA cu130).
 
-# --- Notebook / Jupyter ---
-notebook
-ipykernel
-jupyterlab
+# --- Web Framework & Production ASGI Server ---
+fastapi>=0.115.0,<1.0.0
+uvicorn[standard]>=0.32.0,<1.0.0
+pydantic>=2.9.0,<3.0.0
+python-multipart>=0.0.12,<1.0.0
 
-# --- Data handling ---
-numpy
-pandas
-pillow
-
-# --- Training utilities / metrics ---
-scikit-learn
-matplotlib
-seaborn
-
-# --- Backend (FastAPI serving) ---
-fastapi
-uvicorn[standard]
-python-multipart
-pydantic
-
-# --- AWS / storage ---
-boto3
-
-# --- Image processing ---
-opencv-python-headless
-
-# --- Reports ---
-reportlab
-fpdf2
-
-# --- Progress / utils ---
-tqdm
-python-dotenv
+# --- Deep Learning & Computer Vision ---
+ultralytics>=8.3.0,<8.4.0
+opencv-python-headless>=4.10.0,<5.0.0
+pillow>=10.4.0,<12.0.0
+numpy>=1.26.4,<2.2.0

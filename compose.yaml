@@ -1,0 +1,58 @@
+# ==============================================================================
+# CircuitSight — Local Multi-Container Orchestration (Docker Compose)
+#
+# Usage:
+#   docker compose up --build -d
+#   docker compose ps
+#   docker compose down
+#
+# Architecture:
+# - backend: FastAPI + PyTorch CPU + YOLOv8 + EfficientNet-B0 (Port 8000)
+# - frontend: React/Vite compiled static bundle served via Nginx (Port 80)
+# - network: circuitsight-net bridge network enables Nginx DNS resolution of 'backend'
+# ==============================================================================
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: circuitsight-backend:local
+    container_name: circuitsight-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    networks:
+      - circuitsight-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: circuitsight-frontend:local
+    container_name: circuitsight-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - circuitsight-net
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+networks:
+  circuitsight-net:
+    driver: bridge

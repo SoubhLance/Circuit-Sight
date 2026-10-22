@@ -1,0 +1,86 @@
+# ==============================================================================
+# CircuitSight — Root Docker Build Exclusions (Backend Build Context)
+# Build command: docker build -f backend/Dockerfile -t circuitsight-backend:latest .
+# ==============================================================================
+
+# --- Local Virtual Environments (Windows binaries & CUDA dlls, ~4.0 GB) ---
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Python Bytecode & Test Runner Caches ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# --- High-Volume Training & Evaluation Datasets (~3.2 GB) ---
+dataset/
+backend/dataset/
+data/
+backend/data/
+*.cache
+
+# --- Training Notebooks, Base Weights, & Training Metrics ---
+backend/notebooks/
+backend/results/
+runs/
+backend/runs/
+wandb/
+
+# --- Standalone Model Formats & Runtime Whitelist ---
+# Exclude standalone base weights and non-runtime model formats
+*.ckpt
+*.h5
+*.onnx
+*.engine
+# Explicitly PRESERVE runtime YOLO and EfficientNet models
+!backend/models/yolov8_pcb_best.pt
+!backend/models/yolov8_pcb_best.json
+!backend/models/efficientnet_b0_best.pth
+
+# --- Temporary Batch Files & Generated Report Archives ---
+backend/tmp/
+tmp/
+scratch/
+*.tmp
+*.zip
+*.tar.gz
+*.tar
+*.rar
+
+# --- Environment Secrets, Credentials, & Local Logs ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+aws_credentials
+.aws/
+*.log
+
+# --- Frontend Source & Dependencies (Excluded from Backend Container) ---
+# Frontend is containerized separately via: docker build -t circuitsight-frontend ./frontend
+frontend/
+node_modules/
+
+# --- Version Control & IDE Metadata ---
+.git/
+.gitignore
+.gitattributes
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
